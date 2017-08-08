@@ -8,16 +8,19 @@
     <ListView
         android:id="@+id/actMain_lstContacts"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:isScrollContainer="false"
         android:persistentDrawingCache="all" />
 
     <LinearLayout
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_below="@id/actMain_lstContacts"
         android:layout_width="match_parent"
-        android:layout_height="250dp">
+        android:layout_height="250dp"
+        android:layout_below="@id/actMain_lstContacts"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView"
@@ -50,5 +53,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true" />
     </LinearLayout>
+
 
 </RelativeLayout>
