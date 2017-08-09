@@ -32,9 +32,7 @@ public class GetContactsDetail {
     public static List<Contact> getAllContacts(Context context) {
         lstAllContacts = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
-        Contact contactToAdd = new Contact();
-//        String phoneNumber = getContactNumbers(contentResolver, contactToAdd.id);
-//        StringBuffer output = new StringBuffer();
+        Contact contactToAdd;
         Cursor cursor = contentResolver.query(CONTENT_URI, null, null, null, null);
         // Loop for every contact in the phone
         if (cursor.getCount() > 0) {
@@ -44,12 +42,8 @@ public class GetContactsDetail {
                 contactToAdd.name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HAS_PHONE_NUMBER)));
                 if (hasPhoneNumber > 0) {
-                    // Query and loop for every phone number of the contact
                     getContactNumbers(contentResolver, contactToAdd.id);
                     contactToAdd.main_number = main_number;
-                    // Query and loop for every email of the contact
-
-                    //get image
                     contactToAdd.pro_uri = getContactUri(contentResolver, contactToAdd.id);
                 } else
                     continue;
