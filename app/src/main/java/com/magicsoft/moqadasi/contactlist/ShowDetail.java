@@ -18,7 +18,7 @@ public class ShowDetail extends AppCompatActivity {
         Intent rec_intent = getIntent();
 
         Integer position = rec_intent.getIntExtra("contact_pos", 0);
-        Contact contactToShow = new Contact(rec_intent.getStringExtra("contact_id"), rec_intent.getStringExtra("contact_name"));
+        Contact contactToShow = new Contact(rec_intent.getStringExtra("contact_id"), rec_intent.getStringExtra("contact_name"),rec_intent.getStringExtra("contact_number"));
 
         ImageView mShowDetail_imgPro = (ImageView) findViewById(R.id.showDetail_imgPro);
         TextView mShowDetail_txtName = (TextView) findViewById(R.id.showDetail_txtName);

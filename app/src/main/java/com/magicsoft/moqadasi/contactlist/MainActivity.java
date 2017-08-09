@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -26,13 +30,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ListView mActMain_lstContacts;
     List<Contact> lstAllContacts = new ArrayList<>();
     int TAG_INTENT_CONTACT_PERMISSION = 555;
+    CustomArrayAdapterContacts adp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        outputText = (TextView) findViewById(R.id.textView1);
+
         mActMain_lstContacts = (ListView) findViewById(R.id.actMain_lstContacts);
+
         checkAccess();
     }
 
@@ -41,12 +47,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, TAG_INTENT_CONTACT_PERMISSION);
         } else
-            FillList();
+            fillList();
     }
 
-    public void FillList() {
+    public void fillList() {
         lstAllContacts = GetContactsDetail.getAllContacts(this);
-        CustomArrayAdapterContacts adp = new CustomArrayAdapterContacts(this, R.layout.contacts_list_item, lstAllContacts);
+        adp = new CustomArrayAdapterContacts(this, R.layout.contacts_list_item, lstAllContacts);
         mActMain_lstContacts.setAdapter(adp);
         mActMain_lstContacts.setOnItemClickListener(this);
     }
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Intent goToDetail = new Intent(this, ShowDetail.class);
         goToDetail.putExtra("contact_id", lstAllContacts.get(position).id);
         goToDetail.putExtra("contact_name", lstAllContacts.get(position).name);
+        goToDetail.putExtra("contact_number", lstAllContacts.get(position).main_number);
         goToDetail.putExtra("contact_pos", position);
         startActivity(goToDetail);
     }
@@ -66,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case 555: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    fileList();
+                    fillList();
                 } else {
                     Toast.makeText(this, "متاسفانه برنامه بدون دسترسی به مخاطبین نمیتواند اجرا شود", Toast.LENGTH_LONG).show();
                     finish();
@@ -75,5 +82,48 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
 
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String searchQuery) {
+                adp.filter(searchQuery.trim());
+                mActMain_lstContacts.invalidate();
+                return true;
+            }
+        });
+
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                // Do something when collapsed
+                return true;  // Return true to collapse action view
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                // Do something when expanded
+                return true;  // Return true to expand action view
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            return true;//to consume it here
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
